@@ -1,6 +1,6 @@
 {
   "name": "ampsw",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Switch Amp accounts locally",
   "type": "module",
   "bin": {

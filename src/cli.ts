@@ -8,7 +8,7 @@ import { runStatusCommand } from "./commands/status";
 import { runUseCommand } from "./commands/use";
 import { UserError } from "./lib/errors";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 
 type CommandHandler = (args: string[], context: Awaited<ReturnType<typeof createAppContext>>) => Promise<string>;
 
