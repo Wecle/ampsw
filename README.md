@@ -17,7 +17,7 @@ curl -fsSL https://raw.githubusercontent.com/Wecle/ampsw/main/scripts/install.sh
 ### npm
 
 ```bash
-npm i -g ampsw
+npm i -g @wecle/ampsw
 ```
 
 ### Homebrew
@@ -44,6 +44,7 @@ ampsw delete --all
 - `add <name>` runs `amp login`, then saves the new login under `<name>`.
 - `use <name>` switches to a saved account and preserves the current login first.
 - `delete` only removes saved snapshots from `ampsw`; it does not run `amp logout`.
+- The npm package name is `@wecle/ampsw`, but the installed CLI command is still `ampsw`.
 
 ## Development
 

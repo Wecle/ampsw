@@ -1,10 +1,13 @@
 {
-  "name": "ampsw",
+  "name": "@wecle/ampsw",
   "version": "0.1.0",
   "description": "Global installer for the ampsw Bun binary",
   "type": "module",
   "bin": {
     "ampsw": "bin/ampsw"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
     "bin/ampsw",

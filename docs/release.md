@@ -44,6 +44,8 @@ release artifact for the package version.
 When `NPM_TOKEN` is configured, the release workflow runs `npm publish --access public`
 from `packaging/npm` after the GitHub Release has been created.
 
+The published npm package name is `@wecle/ampsw`, while the CLI command remains `ampsw`.
+
 ## Homebrew
 
 The Homebrew formula template lives under `packaging/homebrew`. After release checksums are
