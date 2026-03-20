@@ -1,14 +1,24 @@
 # ampsw
 
-`ampsw` is a Bun + TypeScript CLI for switching between saved Amp accounts on macOS and Linux.
+*Switch between saved Amp accounts from the command line*
 
-It only supports Amp. The tool reads and writes Amp's `~/.local/share/amp/secrets.json`,
-stores saved account secrets securely when possible, and keeps local metadata in its own
-state file.
+**English** | [中文](docs/README.zh-CN.md)
 
-## Install
+[![npm version](https://img.shields.io/npm/v/@wecle/ampsw?style=flat-square)](https://www.npmjs.com/package/@wecle/ampsw)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
-### curl
+A lightweight CLI tool for managing multiple [Amp](https://ampcode.com) accounts on macOS and Linux. Save, switch, and organize your Amp logins without repeated `amp login` / `amp logout` cycles.
+
+## Features
+
+- **Instant account switching** — jump between saved Amp accounts in one command
+- **Auto-import** — detects your current Amp login on first run and saves it as `default`
+- **Secure storage** — uses macOS Keychain, Linux Secret Service (via `secret-tool`), or an encrypted local vault as fallback
+- **Non-destructive** — never runs `amp logout`; your Amp session is always preserved
+
+## Installation
+
+### curl (recommended)
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Wecle/ampsw/main/scripts/install.sh | bash
@@ -26,27 +36,41 @@ npm i -g @wecle/ampsw
 brew install Wecle/tap/ampsw
 ```
 
-## Commands
+> [!NOTE]
+> The npm package name is `@wecle/ampsw`, but the installed CLI command is `ampsw`.
+
+## Usage
 
 ```bash
-ampsw save <name>
-ampsw add <name>
-ampsw rename <old-name> <new-name>
-ampsw use <name>
-ampsw status
-ampsw delete <name>
-ampsw delete --all
+ampsw save <name>                 # Save the current Amp login as <name>
+ampsw add <name>                  # Run `amp login`, then save the new account as <name>
+ampsw use <name>                  # Switch to a saved account (preserves the current one first)
+ampsw status                      # Show saved accounts and which one is active
+ampsw rename <old-name> <new-name> # Rename a saved account
+ampsw delete <name>               # Delete a saved account
+ampsw delete --all                # Delete all saved accounts
 ```
 
-## Behavior
+### Quick start
 
-- On first run, if Amp is already logged in, `ampsw` auto-imports the current account as `default`.
-- `save <name>` stores the current Amp login under a friendly name.
-- `add <name>` runs `amp login`, then saves the new login under `<name>`.
-- `rename <old-name> <new-name>` renames a saved account, including `default`.
-- `use <name>` switches to a saved account and preserves the current login first.
-- `delete` only removes saved snapshots from `ampsw`; it does not run `amp logout`.
-- The npm package name is `@wecle/ampsw`, but the installed CLI command is still `ampsw`.
+```bash
+# First run auto-imports your current login as "default"
+ampsw status
+
+# Save your current login under a friendly name
+ampsw save work
+
+# Add a second account (opens `amp login`)
+ampsw add personal
+
+# Switch between them
+ampsw use work
+ampsw use personal
+```
+
+### How it works
+
+`ampsw` reads and writes Amp's `~/.local/share/amp/secrets.json`. When you switch accounts, the current API key is automatically preserved so you never lose a session. Account secrets are stored in the OS keychain when available, falling back to a local encrypted vault.
 
 ## Development
 
