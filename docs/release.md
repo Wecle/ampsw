@@ -27,10 +27,22 @@ Before tagging, keep these versions aligned:
 - `package.json`
 - `packaging/npm/package.json`
 
+The workflow expects these credentials if you want full automation:
+
+- `NPM_TOKEN`
+  Required for `npm publish`
+- `HOMEBREW_TAP_GITHUB_TOKEN`
+  Required to push formula updates into the tap repo
+- Repository variable `HOMEBREW_TAP_REPOSITORY`
+  Optional. Defaults to `Wecle/homebrew-tap` if unset
+
 ## npm
 
 The npm package under `packaging/npm` is a thin installer that downloads the matching
 release artifact for the package version.
+
+When `NPM_TOKEN` is configured, the release workflow runs `npm publish --access public`
+from `packaging/npm` after the GitHub Release has been created.
 
 ## Homebrew
 
@@ -40,6 +52,9 @@ generated, render a formula with:
 ```bash
 bun run scripts/release/render-homebrew-formula.ts > ampsw.rb
 ```
+
+When `HOMEBREW_TAP_GITHUB_TOKEN` is configured, the release workflow also clones the tap
+repository, writes `Formula/ampsw.rb`, commits, and pushes the update automatically.
 
 ## curl install
 

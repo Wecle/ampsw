@@ -17,19 +17,23 @@ jobs:
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: "1.2.18"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
       - run: bun install
       - run: bun test
       - run: bun run build
       - run: bun run lint:types
       - run: bun run scripts/release/assert-release-version.ts "${GITHUB_REF_NAME}"
+      - run: echo "PACKAGE_VERSION=$(bun -e 'console.log((await Bun.file(\"package.json\").json()).version)')" >> "$GITHUB_ENV"
       - run: bun run scripts/release/build-binaries.ts
       - run: bun run scripts/release/create-checksums.ts
       - run: mkdir -p dist/homebrew && bun run scripts/release/render-homebrew-formula.ts > dist/homebrew/ampsw.rb
       - env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          VERSION="$(bun -e 'console.log((await Bun.file("package.json").json()).version)')"
-          ASSET_DIR="dist/releases/${VERSION}"
+          ASSET_DIR="dist/releases/${PACKAGE_VERSION}"
 
           if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
             gh release upload "${GITHUB_REF_NAME}" \
@@ -51,3 +55,21 @@ jobs:
               --title "${GITHUB_REF_NAME}" \
               --generate-notes
           fi
+      - if: ${{ secrets.NPM_TOKEN != '' }}
+        working-directory: packaging/npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          PACKAGE_NAME="$(node -p "require('./package.json').name")"
+          PACKAGE_VERSION_LOCAL="$(node -p "require('./package.json').version")"
+
+          if npm view "${PACKAGE_NAME}@${PACKAGE_VERSION_LOCAL}" version >/dev/null 2>&1; then
+            echo "${PACKAGE_NAME}@${PACKAGE_VERSION_LOCAL} is already published"
+          else
+            npm publish --access public
+          fi
+      - if: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN != '' }}
+        env:
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+          AMPSW_HOMEBREW_TAP_REPOSITORY: ${{ vars.HOMEBREW_TAP_REPOSITORY }}
+        run: bash scripts/release/update-homebrew-tap.sh dist/homebrew/ampsw.rb "${PACKAGE_VERSION}"

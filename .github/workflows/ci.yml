@@ -25,3 +25,4 @@ jobs:
       - run: bun test
       - run: bun run build
       - run: bun run lint:types
+      - run: bash -n scripts/install.sh scripts/release/update-homebrew-tap.sh
