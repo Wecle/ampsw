@@ -29,14 +29,16 @@ jobs:
       - run: bun run build
       - run: bun run lint:types
       - run: bun run scripts/release/assert-release-version.ts "${GITHUB_REF_NAME}"
-      - run: echo "PACKAGE_VERSION=$(bun -e 'console.log((await Bun.file(\"package.json\").json()).version)')" >> "$GITHUB_ENV"
+      - id: package_version
+        run: |
+          echo "value=$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
       - run: bun run scripts/release/build-binaries.ts
       - run: bun run scripts/release/create-checksums.ts
       - run: mkdir -p dist/homebrew && bun run scripts/release/render-homebrew-formula.ts > dist/homebrew/ampsw.rb
       - env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ASSET_DIR="dist/releases/${PACKAGE_VERSION}"
+          ASSET_DIR="dist/releases/${{ steps.package_version.outputs.value }}"
 
           if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
             gh release upload "${GITHUB_REF_NAME}" \
@@ -75,4 +77,4 @@ jobs:
         env:
           HOMEBREW_TAP_GITHUB_TOKEN: ${{ env.HOMEBREW_TAP_GITHUB_TOKEN }}
           AMPSW_HOMEBREW_TAP_REPOSITORY: ${{ vars.HOMEBREW_TAP_REPOSITORY }}
-        run: bash scripts/release/update-homebrew-tap.sh dist/homebrew/ampsw.rb "${PACKAGE_VERSION}"
+        run: bash scripts/release/update-homebrew-tap.sh dist/homebrew/ampsw.rb "${{ steps.package_version.outputs.value }}"
