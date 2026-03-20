@@ -11,6 +11,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
@@ -55,10 +58,10 @@ jobs:
               --title "${GITHUB_REF_NAME}" \
               --generate-notes
           fi
-      - if: ${{ secrets.NPM_TOKEN != '' }}
+      - if: ${{ env.NPM_TOKEN != '' }}
         working-directory: packaging/npm
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
         run: |
           PACKAGE_NAME="$(node -p "require('./package.json').name")"
           PACKAGE_VERSION_LOCAL="$(node -p "require('./package.json').version")"
@@ -68,8 +71,8 @@ jobs:
           else
             npm publish --access public
           fi
-      - if: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN != '' }}
+      - if: ${{ env.HOMEBREW_TAP_GITHUB_TOKEN != '' }}
         env:
-          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ env.HOMEBREW_TAP_GITHUB_TOKEN }}
           AMPSW_HOMEBREW_TAP_REPOSITORY: ${{ vars.HOMEBREW_TAP_REPOSITORY }}
         run: bash scripts/release/update-homebrew-tap.sh dist/homebrew/ampsw.rb "${PACKAGE_VERSION}"
