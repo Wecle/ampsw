@@ -6,7 +6,7 @@ test("npm packaging exposes the global ampsw binary", async () => {
     scripts: Record<string, string>;
   };
 
-  expect(packageJson.bin.ampsw).toBe("./bin/ampsw");
+  expect(packageJson.bin.ampsw).toBe("bin/ampsw");
   expect(packageJson.scripts.postinstall).toBe("node ./postinstall.mjs");
 });
 
