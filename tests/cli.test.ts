@@ -18,6 +18,7 @@ test("cli help lists the supported commands", async () => {
   const output = logs.join("\n");
   expect(output).toContain("add <name>");
   expect(output).toContain("save <name>");
+  expect(output).toContain("rename <old-name> <new-name>");
   expect(output).toContain("use <name>");
   expect(output).toContain("status");
   expect(output).toContain("delete <name>");

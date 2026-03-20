@@ -2,6 +2,7 @@
 import { createAppContext } from "./app";
 import { runAddCommand } from "./commands/add";
 import { runDeleteCommand } from "./commands/delete";
+import { runRenameCommand } from "./commands/rename";
 import { runSaveCommand } from "./commands/save";
 import { runStatusCommand } from "./commands/status";
 import { runUseCommand } from "./commands/use";
@@ -14,6 +15,7 @@ type CommandHandler = (args: string[], context: Awaited<ReturnType<typeof create
 const commands: Record<string, CommandHandler> = {
   add: runAddCommand,
   save: runSaveCommand,
+  rename: runRenameCommand,
   use: runUseCommand,
   status: runStatusCommand,
   delete: runDeleteCommand,
@@ -29,6 +31,8 @@ function renderHelp(): string {
     "Commands:",
     "  add <name>      Log into Amp and save the account as <name>",
     "  save <name>     Save the current Amp login as <name>",
+    "  rename <old-name> <new-name>",
+    "                  Rename a saved Amp account",
     "  use <name>      Switch to a saved Amp account",
     "  status          Show saved accounts and the active account",
     "  delete <name>   Delete a saved account",

@@ -1,6 +1,5 @@
 import { AppContext } from "../app";
 import { addAccount } from "../core/add-account";
-import { confirm, promptText } from "../lib/prompt";
 
 export async function runAddCommand(args: string[], context: AppContext): Promise<string> {
   const name = args[0];
@@ -8,16 +7,7 @@ export async function runAddCommand(args: string[], context: AppContext): Promis
     throw new Error("Usage: ampsw add <name>");
   }
 
-  const result = await addAccount(context, name, {
-    promptRenameDefault: async () => {
-      const shouldRename = await confirm("The current account is saved as default. Rename it before adding a new account?");
-      if (!shouldRename) {
-        return null;
-      }
-      const renameTo = await promptText("Enter a name for the current default account:");
-      return renameTo || null;
-    },
-  });
+  const result = await addAccount(context, name);
 
   if (result.action === "unchanged") {
     return `Amp login did not change accounts. Active account remains ${result.active}.`;

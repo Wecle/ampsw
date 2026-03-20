@@ -31,6 +31,7 @@ brew install Wecle/tap/ampsw
 ```bash
 ampsw save <name>
 ampsw add <name>
+ampsw rename <old-name> <new-name>
 ampsw use <name>
 ampsw status
 ampsw delete <name>
@@ -42,6 +43,7 @@ ampsw delete --all
 - On first run, if Amp is already logged in, `ampsw` auto-imports the current account as `default`.
 - `save <name>` stores the current Amp login under a friendly name.
 - `add <name>` runs `amp login`, then saves the new login under `<name>`.
+- `rename <old-name> <new-name>` renames a saved account, including `default`.
 - `use <name>` switches to a saved account and preserves the current login first.
 - `delete` only removes saved snapshots from `ampsw`; it does not run `amp logout`.
 - The npm package name is `@wecle/ampsw`, but the installed CLI command is still `ampsw`.

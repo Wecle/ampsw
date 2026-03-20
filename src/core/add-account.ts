@@ -2,12 +2,11 @@ import { AppContext, persistState, readCurrentApiKey } from "../app";
 import { UserError } from "../lib/errors";
 import { runAmpLogin } from "../platform/run-amp-login";
 import { findAccountByFingerprint, findAccountByName } from "../storage/state-types";
-import { createAccountRecord, renameAccount, touchAccount } from "./account-utils";
+import { createAccountRecord, touchAccount } from "./account-utils";
 import { fingerprintApiKey } from "./fingerprint";
 import { preserveCurrentAccount } from "./use-account";
 
 export interface AddAccountOptions {
-  promptRenameDefault?: () => Promise<string | null>;
   login?: () => Promise<void>;
 }
 
@@ -28,26 +27,6 @@ export async function addAccount(
 
   const currentKey = await readCurrentApiKey(context);
   const beforeFingerprint = currentKey ? fingerprintApiKey(currentKey) : null;
-  const active = context.state.active ? findAccountByName(context.state, context.state.active) : undefined;
-
-  if (active && active.name === "default" && active.origin === "auto" && active.fingerprint === beforeFingerprint) {
-    const renameTo = await options.promptRenameDefault?.();
-    if (renameTo) {
-      if (renameTo === name) {
-        throw new UserError(`Rename the current default account to a different name than "${name}"`);
-      }
-      if (findAccountByName(context.state, renameTo)) {
-        throw new UserError(`Account "${renameTo}" already exists`);
-      }
-      const defaultSecret = await context.secretStore.get("default");
-      if (defaultSecret) {
-        await context.secretStore.set(renameTo, defaultSecret);
-        await context.secretStore.delete("default");
-      }
-      renameAccount(context.state, "default", renameTo, context.now());
-      await persistState(context);
-    }
-  }
 
   await preserveCurrentAccount(context);
   if (options.login) {
