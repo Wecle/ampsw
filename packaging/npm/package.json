@@ -4,7 +4,7 @@
   "description": "Global installer for the ampsw Bun binary",
   "type": "module",
   "bin": {
-    "ampsw": "./bin/ampsw"
+    "ampsw": "bin/ampsw"
   },
   "files": [
     "bin/ampsw",
