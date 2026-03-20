@@ -1,14 +1,16 @@
 import { chmodSync, createWriteStream, existsSync, mkdirSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import https from "node:https";
 
-const version = "0.1.0";
 const repository = process.env.AMPSW_INSTALL_REPO || "Wecle/ampsw";
 const currentDir = dirname(fileURLToPath(import.meta.url));
 const runtimeDir = join(currentDir, "runtime");
 const binaryPath = join(runtimeDir, "ampsw");
+const packageJson = JSON.parse(await readFile(join(currentDir, "package.json"), "utf8"));
+const version = packageJson.version;
 
 function detectTarget() {
   const platform = process.platform;

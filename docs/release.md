@@ -11,6 +11,22 @@ The release flow builds Bun-compiled single-file executables for:
 
 Artifacts are published as `ampsw-<target>.tar.gz`.
 
+## Automated GitHub Release
+
+Pushing a tag like `v0.1.0` triggers the GitHub Actions release workflow. The workflow now:
+
+- runs tests, build, and type checks
+- validates that the tag matches both package versions
+- builds the four release tarballs
+- generates `SHA256SUMS`
+- renders `dist/homebrew/ampsw.rb`
+- creates a GitHub Release and uploads those files as assets
+
+Before tagging, keep these versions aligned:
+
+- `package.json`
+- `packaging/npm/package.json`
+
 ## npm
 
 The npm package under `packaging/npm` is a thin installer that downloads the matching

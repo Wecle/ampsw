@@ -5,6 +5,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -15,6 +18,36 @@ jobs:
         with:
           bun-version: "1.2.18"
       - run: bun install
+      - run: bun test
+      - run: bun run build
+      - run: bun run lint:types
+      - run: bun run scripts/release/assert-release-version.ts "${GITHUB_REF_NAME}"
       - run: bun run scripts/release/build-binaries.ts
       - run: bun run scripts/release/create-checksums.ts
       - run: mkdir -p dist/homebrew && bun run scripts/release/render-homebrew-formula.ts > dist/homebrew/ampsw.rb
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="$(bun -e 'console.log((await Bun.file("package.json").json()).version)')"
+          ASSET_DIR="dist/releases/${VERSION}"
+
+          if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+            gh release upload "${GITHUB_REF_NAME}" \
+              "${ASSET_DIR}/ampsw-darwin-arm64.tar.gz" \
+              "${ASSET_DIR}/ampsw-darwin-x64.tar.gz" \
+              "${ASSET_DIR}/ampsw-linux-arm64.tar.gz" \
+              "${ASSET_DIR}/ampsw-linux-x64.tar.gz" \
+              "${ASSET_DIR}/SHA256SUMS" \
+              "dist/homebrew/ampsw.rb" \
+              --clobber
+          else
+            gh release create "${GITHUB_REF_NAME}" \
+              "${ASSET_DIR}/ampsw-darwin-arm64.tar.gz" \
+              "${ASSET_DIR}/ampsw-darwin-x64.tar.gz" \
+              "${ASSET_DIR}/ampsw-linux-arm64.tar.gz" \
+              "${ASSET_DIR}/ampsw-linux-x64.tar.gz" \
+              "${ASSET_DIR}/SHA256SUMS" \
+              "dist/homebrew/ampsw.rb" \
+              --title "${GITHUB_REF_NAME}" \
+              --generate-notes
+          fi
