@@ -1,0 +1,29 @@
+class Ampsw < Formula
+  desc "Switch Amp accounts locally"
+  homepage "{{HOMEPAGE}}"
+  version "{{VERSION}}"
+
+  on_macos do
+    if Hardware::CPU.arm?
+      url "{{DARWIN_ARM64_URL}}"
+      sha256 "{{DARWIN_ARM64_SHA}}"
+    else
+      url "{{DARWIN_X64_URL}}"
+      sha256 "{{DARWIN_X64_SHA}}"
+    end
+  end
+
+  on_linux do
+    if Hardware::CPU.arm?
+      url "{{LINUX_ARM64_URL}}"
+      sha256 "{{LINUX_ARM64_SHA}}"
+    else
+      url "{{LINUX_X64_URL}}"
+      sha256 "{{LINUX_X64_SHA}}"
+    end
+  end
+
+  def install
+    bin.install "ampsw"
+  end
+end

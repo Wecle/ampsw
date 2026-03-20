@@ -1,0 +1,15 @@
+{
+  "name": "ampsw",
+  "version": "0.1.0",
+  "description": "Switch Amp accounts locally",
+  "type": "module",
+  "bin": {
+    "ampsw": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "bun build src/cli.ts --target bun --outfile dist/cli.js",
+    "compile": "bun run scripts/release/build-binaries.ts",
+    "test": "bun test",
+    "lint:types": "bun run scripts/typecheck.ts"
+  }
+}
